@@ -24,6 +24,8 @@ jobs:
           format: 'json'
           output: trivy-report.json
           directory: .  
+          skip-update: true
+
 
       # Snyk Scan
       - name: Run Snyk SCA scan
