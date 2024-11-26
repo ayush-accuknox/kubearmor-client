@@ -33,9 +33,9 @@ jobs:
       # Snyk Scan
       - name: Run Snyk SCA scan
         uses: snyk/actions/docker@master
-        with:
-          snyk-token: ${{ secrets.SNYK_TOKEN }} # Make sure SNYK_TOKEN is stored as a secret
-          command: monitor
+        # with:
+        #   snyk-token: ${{ secrets.SNYK_TOKEN }} # Make sure SNYK_TOKEN is stored as a secret
+        #   command: monitor
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
