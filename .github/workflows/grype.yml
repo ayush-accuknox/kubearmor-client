@@ -24,10 +24,11 @@ jobs:
       - name: Install Gyrape CLI
         run: |
           curl -sSL https://gyrape.io/install | bash
+          gyrape --version
 
       - name: Run Gyrape Security Scan
         run: |
-          gyrape scan --target . --config ./config/gyrape-config.json
+          gyrape scan --target .
 
       - name: Generate Gyrape Scan Report
         run: |
