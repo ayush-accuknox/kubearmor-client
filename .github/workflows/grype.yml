@@ -16,11 +16,18 @@ jobs:
           output-format: "json"  # Set output format to JSON
           output-file: "scan-output.json"  # Save JSON output to a file
       
-      - name: Upload Grype Scan Results
+      - name: Save and display scan result
+        run: |
+          # Save the output to a file and display it in the logs
+          mkdir -p output
+          grype -o json dir:. > output/grype-results.json
+          cat output/grype-results.json  # Display the JSON output in the GitHub Actions log
+
+      - name: Upload Grype scan results
         uses: actions/upload-artifact@v4
         with:
-          name: grype-scan-results
-          path: grype-results.json
+          name: grype-results
+          path: output/grype-results.json
 
       # - name: upload Anchore scan SARIF report
       #   uses: github/codeql-action/upload-sarif@v3
