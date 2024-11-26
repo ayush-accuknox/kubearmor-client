@@ -7,6 +7,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Scan current project
       id: scan
       uses: anchore/scan-action@v2
@@ -14,19 +15,7 @@ jobs:
         path: "./"
         fail-build: true
         acs-report-enable: true
-        output-format: "sarif"  # Ensures SARIF format output
-        output-file: "./scan-reports/anchore_scan_report.sarif"
-    - name: Save Anchore scan report to file
-      run: |
-        # Check if the report exists and move it to a folder for uploading
-        if [ -f "$HOME/anchore_report.json" ]; then
-          mkdir -p scan-reports
-          mv $HOME/anchore_report.json scan-reports/anchore_scan_report.json
-        else
-          echo "Anchore report not found"
-          exit 1
-        fi
-    - name: Upload Anchore scan SARIF report
-      uses: github/codeql-action/upload-sarif@v2
+    - name: upload Anchore scan SARIF report
+      uses: github/codeql-action/upload-sarif@v4
       with:
-        sarif_file: ./scan-reports/anchore_scan_report.json
+        sarif_file: ${{ steps.scan.outputs.sarif }}
