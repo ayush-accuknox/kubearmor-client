@@ -1,0 +1,67 @@
+name: SCA Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sca-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      # Trivy Scan
+      - name: Run Trivy SCA scan
+        uses: aquasecurity/trivy-action@v0.3.0
+        with:
+          scan-type: 'scanning'  # SCA scanning
+          format: 'json'
+          output: trivy-report.json
+
+      # Snyk Scan
+      - name: Run Snyk SCA scan
+        uses: snyk/actions/docker@v2
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }} # Make sure SNYK_TOKEN is stored as a secret
+          monitor: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Grype Scan
+      - name: Run Grype SCA scan
+        run: |
+          curl -sSL https://github.com/anchore/grype/releases/download/v0.61.0/grype_0.61.0_linux_amd64.tar.gz | tar -xzv
+          ./grype -o json > grype-report.json
+
+      # Checkmarx Scan
+      - name: Checkmarx AST CLI Action
+        uses: checkmarx/ast-github-action@main
+        with:
+          base_uri: https://deu.iam.checkmarx.net/
+          cx_tenant: accuknox-nfr
+          cx_client_id: Ayush
+          cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
+
+      # OWASP Dependency-Check Scan
+      - name: Run OWASP Dependency-Check scan
+        run: |
+          curl -sSL https://github.com/jeremydmiller/owasp-dependency-check-action/releases/download/v1.0.0/owasp-dependency-check-action-linux-x64.tar.gz | tar -xzv
+          ./dependency-check --scan . --format JSON --out ./dependency-check-report.json
+
+      # Optional: Upload reports as artifacts
+      - name: Upload scan reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: sca-scan-reports
+          path: |
+            trivy-report.json
+            snyk-report.json
+            grype-report.json
+            checkmarx-report.json
+            dependency-check-report.json
