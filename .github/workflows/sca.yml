@@ -21,6 +21,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'fi'  # SCA scanning
+          scan-ref: '.'
           format: 'json'
           output: trivy-report.json
 
