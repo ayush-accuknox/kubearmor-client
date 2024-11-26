@@ -31,6 +31,7 @@ jobs:
           skip-update: true
 
       # Snyk Scan
+      - uses: actions/checkout@main
       - name: Run Snyk SCA scan
         uses: snyk/actions/docker@master
         # with:
@@ -38,6 +39,8 @@ jobs:
         #   command: monitor
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
 
       # Grype Scan
       - name: Run Grype SCA scan
