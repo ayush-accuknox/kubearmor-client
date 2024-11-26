@@ -27,15 +27,8 @@ jobs:
           scan-type: 'fs'  # SCA scanning
           format: 'json'
           output: trivy-report.json
-          directory: .  
-          skip-update: true
-
-      # Grype Scan
-      - name: Run Grype SCA scan
-        run: |
-          curl -sSL https://github.com/anchore/grype/releases/download/v0.61.0/grype_0.61.0_linux_amd64.tar.gz | tar -xzv
-          ./grype -o json > grype-report.json
-
+          directory: . 
+          
       # Checkmarx Scan
       - name: Checkmarx AST CLI Action
         uses: checkmarx/ast-github-action@main
@@ -45,12 +38,6 @@ jobs:
           cx_client_id: Ayush
           cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
 
-      # OWASP Dependency-Check Scan
-      - name: Run OWASP Dependency-Check scan
-        run: |
-          curl -sSL https://github.com/jeremydmiller/owasp-dependency-check-action/releases/download/v1.0.0/owasp-dependency-check-action-linux-x64.tar.gz | tar -xzv
-          ./dependency-check --scan . --format JSON --out ./dependency-check-report.json
-
       # Optional: Upload reports as artifacts
       - name: Upload scan reports
         uses: actions/upload-artifact@v3
@@ -58,7 +45,5 @@ jobs:
           name: sca-scan-reports
           path: |
             trivy-report.json
-            snyk-report.json
-            grype-report.json
             checkmarx-report.json
-            dependency-check-report.json
+
