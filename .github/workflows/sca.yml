@@ -26,7 +26,6 @@ jobs:
           directory: .  
           skip-update: true
 
-
       # Snyk Scan
       - name: Run Snyk SCA scan
         uses: snyk/actions/docker@master
