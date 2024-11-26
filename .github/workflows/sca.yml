@@ -18,7 +18,7 @@ jobs:
 
       # Trivy Scan
       - name: Run Trivy SCA scan
-        uses: aquasecurity/trivy-action@v0.3.0
+        uses: aquasecurity/trivy-action@v0.33.0
         with:
           scan-type: 'scanning'  # SCA scanning
           format: 'json'
@@ -26,7 +26,7 @@ jobs:
 
       # Snyk Scan
       - name: Run Snyk SCA scan
-        uses: snyk/actions/docker@v2
+        uses: snyk/actions/docker@master
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }} # Make sure SNYK_TOKEN is stored as a secret
           monitor: true
