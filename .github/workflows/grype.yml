@@ -1,0 +1,27 @@
+name: Grype Vulnerability Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  grype-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Grype
+        run: |
+          curl -sSL https://github.com/anchore/grype/releases/download/v0.61.0/grype_0.61.0_linux_amd64.tar.gz | tar -xzv
+          sudo mv grype /usr/local/bin/
+
+      - name: Run Grype Scan on Current Directory
+        run: grype dir:.
+
+      - name: Upload Grype Scan Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: grype-scan-results
+          path: grype-results.json
