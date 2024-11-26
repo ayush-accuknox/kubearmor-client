@@ -18,7 +18,7 @@ jobs:
           sudo mv grype /usr/local/bin/
 
       - name: Run Grype Scan on Current Directory
-        run: grype dir:.
+        run: grype dir:. -o json > grype-results.json
 
       - name: Upload Grype Scan Results
         uses: actions/upload-artifact@v3
