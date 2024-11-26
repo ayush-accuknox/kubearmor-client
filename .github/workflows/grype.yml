@@ -13,24 +13,33 @@ jobs:
         uses: anchore/scan-action@v3
         with:
           path: "."
-      - name: upload Anchore scan SARIF report
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
-
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Install Grype
-        run: |
-          curl -sSL https://github.com/anchore/grype/releases/download/v0.61.0/grype_0.61.0_linux_amd64.tar.gz | tar -xzv
-          sudo mv grype /usr/local/bin/
-
-      - name: Run Grype Scan on Current Directory
-        run: grype dir:. -o json > grype-results.json
-
+          output-format: "json"  # Set output format to JSON
+          output-file: "scan-output.json"  # Save JSON output to a file
+      
       - name: Upload Grype Scan Results
         uses: actions/upload-artifact@v4
         with:
           name: grype-scan-results
           path: grype-results.json
+
+      # - name: upload Anchore scan SARIF report
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: ${{ steps.scan.outputs.sarif }}
+
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v2
+
+      # - name: Install Grype
+      #   run: |
+      #     curl -sSL https://github.com/anchore/grype/releases/download/v0.61.0/grype_0.61.0_linux_amd64.tar.gz | tar -xzv
+      #     sudo mv grype /usr/local/bin/
+
+      # - name: Run Grype Scan on Current Directory
+      #   run: grype dir:. -o json > grype-results.json
+
+      # - name: Upload Grype Scan Results
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: grype-scan-results
+      #     path: grype-results.json
