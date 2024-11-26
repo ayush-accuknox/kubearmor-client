@@ -31,16 +31,28 @@ jobs:
           skip-update: true
 
       # Snyk Scan
-      - uses: actions/checkout@main
-      - name: Run Snyk SCA scan
-        uses: snyk/actions/docker@master
-        # with:
-        #   snyk-token: ${{ secrets.SNYK_TOKEN }} # Make sure SNYK_TOKEN is stored as a secret
-        #   command: monitor
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          # Install Snyk CLI
+          npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk Test
+        run: snyk test --all-projects --json > snyk-report.json
+      
+      - name: Run Snyk Test
+        run: snyk monitor
+
+      - name: Upload Snyk Report
+        uses: actions/upload-artifact@v3
         with:
-          command: monitor
+          name: snyk-report
+          path: snyk-report.json
 
       # Grype Scan
       - name: Run Grype SCA scan
