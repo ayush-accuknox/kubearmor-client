@@ -32,7 +32,7 @@ jobs:
         uses: snyk/actions/docker@master
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }} # Make sure SNYK_TOKEN is stored as a secret
-          monitor: true
+          command: monitor
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
