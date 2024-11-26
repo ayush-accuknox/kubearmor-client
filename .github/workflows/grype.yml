@@ -14,6 +14,8 @@ jobs:
         path: "./"
         fail-build: true
         acs-report-enable: true
+        output-format: "sarif"  # Ensures SARIF format output
+        output-file: "./scan-reports/anchore_scan_report.sarif"
     - name: Save Anchore scan report to file
       run: |
         # Check if the report exists and move it to a folder for uploading
