@@ -1,41 +1,20 @@
-# .github/workflows/gyrape-scan.yml
-
-name: Gyrape Security Scan
-
-# Trigger the workflow on push and pull request events to main or develop branches
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
-
+name: Scan current directory CI
+on: [push]
 jobs:
-  gyrape-scan:
+  anchore_job:
     runs-on: ubuntu-latest
-
+    name: Anchore scan directory
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install Gyrape CLI
-        run: |
-          curl -sSL https://gyrape.io/install | bash
-          gyrape --version
-
-      - name: Run Gyrape Security Scan
-        run: |
-          gyrape scan --target .
-
-      - name: Generate Gyrape Scan Report
-        run: |
-          gyrape report --scan-results ./gyrape-results.json --output ./report.html
-
-      - name: Upload report artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: gyrape-scan-report
-          path: ./report.html
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Scan current project
+      id: scan
+      uses: anchore/scan-action@v2
+      with:
+        path: "./"
+        fail-build: true
+        acs-report-enable: true
+    - name: upload Anchore scan SARIF report
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif }}
