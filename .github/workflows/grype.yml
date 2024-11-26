@@ -21,7 +21,7 @@ jobs:
         run: grype dir:.
 
       - name: Upload Grype Scan Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: grype-scan-results
           path: grype-results.json
