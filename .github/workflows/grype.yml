@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Gyrape Security Scan
         run: |
-          gyrape . ./gyrape-config.json
+          gyrape .
 
       - name: Generate Gyrape Scan Report
         run: |
