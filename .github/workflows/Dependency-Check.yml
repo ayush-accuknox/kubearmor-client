@@ -1,32 +1,27 @@
 name: Dependency-Check
-
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
-
+    types: [opened, synchronize, reopened]
 jobs:
   dependency-check:
-    name: Run OWASP Dependency-Check
+    name: Dependency-Check
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Run OWASP Dependency-Check
+    steps: 
+      - name: Download OWASP Dependency Check
         run: |
-          docker pull owasp/dependency-check
-          docker run --rm -v ${{ github.workspace }}:/src owasp/dependency-check --scan /src --out /src/dependency-check-report
-          
-      - name: Upload Dependency-Check Report
-        uses: actions/upload-artifact@v3
+          VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
+          curl -sL "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
+          unzip dependency-check.zip
+      - name: Run Dependency Check
+        run: |
+          ./dependency-check/bin/dependency-check.sh --out report.html --scan .
+          rm -rf dependency-check*
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: dependency-check-report
-          path: dependency-check-report
+          name: artifacts
+          path: report.html
