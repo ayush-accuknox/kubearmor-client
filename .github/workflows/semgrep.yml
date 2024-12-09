@@ -1,0 +1,49 @@
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+    - main
+    paths:
+    - .github/workflows/semgrep.yml
+name: Semgrep Findings
+jobs:
+  semgrep-free:
+    name: Semgrep-free
+    runs-on: ubuntu-20.04
+    container:
+      image: returntocorp/semgrep
+    steps:
+    - uses: actions/checkout@v4
+    - run: |
+        semgrep scan --json --json-output=semgrep_results.json
+
+    - name: Fix JSON file levels (optional)
+      run: |
+          jq 'map(if .level == "low" then .level = "info" else . end)' semgrep_results.json > tmp_results.json && mv tmp_results.json semgrep_results.json
+
+    - name: Append GitHub metadata to JSON
+      env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          SOURCE: "GitHub"
+      run: |
+          GITHUB_URL="${{ github.server_url }}/${{ github.repository }}"
+          GITHUB_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          jq --arg repo "$GITHUB_REPOSITORY" \
+             --arg sha "$GITHUB_SHA" \
+             --arg ref "$GITHUB_REF" \
+             --arg run_id "$GITHUB_RUN_ID" \
+             --arg run_number "$GITHUB_RUN_NUMBER" \
+             --arg github_url "$GITHUB_URL" \
+             --arg github_run_url "$GITHUB_RUN_URL" \
+             --arg source "$SOURCE" \
+             '.results |= map(. + { "repository": $repo, "commit": $sha, "ref": $ref, "workflow_run_id": $run_id, "workflow_run_number": $run_number, "repository_url": $github_url, "workflow_run_url": $github_run_url, "source": $source })' semgrep_results.json > tmp_results.json && mv tmp_results.json semgrep_results.json
+
+    - name: Upload Semgrep JSON results
+      uses: actions/upload-artifact@v3
+      with:
+        name: semgrep-results
+        path: semgrep_results.json
