@@ -17,9 +17,9 @@ jobs:
     - run: |
         semgrep scan --json --json-output=semgrep_results.json
 
-    - name: Fix JSON file levels (optional)
-      run: |
-          jq 'map(if .level == "low" then .level = "info" else . end)' semgrep_results.json > tmp_results.json && mv tmp_results.json semgrep_results.json
+    # - name: Fix JSON file levels (optional)
+    #   run: |
+    #       jq 'map(if .level == "low" then .level = "info" else . end)' semgrep_results.json > tmp_results.json && mv tmp_results.json semgrep_results.json
 
     - name: Append GitHub metadata to JSON
       env:
