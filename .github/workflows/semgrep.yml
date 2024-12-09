@@ -41,7 +41,7 @@ jobs:
 
         # Append the metadata to the Semgrep JSON output
         semgrep_json=$(cat /tmp/semgrep.json)
-        combined_json=$(echo "$metadata_json" | jq --argjson semgrep "$semgrep_json" '. + {semgrep: $semgrep}')
+        combined_json=$(echo "$metadata_json" | jq --argjson semgrep "$semgrep_json" '. + $semgrep')
 
         # Save the combined JSON to the output file
         echo "$combined_json" > /tmp/combined_output.json
