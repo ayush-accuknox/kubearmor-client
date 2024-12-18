@@ -1,13 +1,11 @@
-name: Checkmarx Sarif Integration
+name: Checkmarx Container Integration
 
 # Controls when the workflow will run
 on:
+  workflow_dispatch: {}
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    - main
 permissions:
   security-events: write
   contents: read
