@@ -1,12 +1,10 @@
 name: SCA Scan
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    - main
 
 jobs:
   sca-scan:
